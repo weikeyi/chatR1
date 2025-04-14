@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SSE 实时消息</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                background-color: #f4f4f4;
+                margin: 20px; /* 页面边距 */
+                display: flex;
+                flex-direction: column; /* 垂直排列元素 */
+                align-items: center; /* 水平居中 */
+            }
+    
+            #connectButton {
+                padding: 10px 20px;
+                font-size: 16px;
+                color: white;
+                background-color: #007bff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                margin-bottom: 15px; /* 按钮下方增加间距 */
+            }
+    
+            #connectButton:hover {
+                background-color: #0056b3;
+            }
+    
+            #connectButton:disabled {
+                background-color: #cccccc; /* 禁用时的颜色 */
+                cursor: not-allowed;
+            }
+    
+    
+    
+            /* 消息显示区域 */
+            #messages {
+                width: 80%; /* 宽度 */
+                max-width: 600px; /* 最大宽度 */
+                height: 300px; /* 固定高度 */
+                background-color: #ffffff; /* 白色背景 */
+                border: 1px solid #ccc; /* 边框 */
+                padding: 10px;
+                overflow-y: scroll; /* 内容超出时显示垂直滚动条 */
+                white-space: pre-wrap; /* 保留空白符和换行符 */
+                font-family: monospace; /* 使用等宽字体，适合显示日志类信息 */
+                line-height: 1.4; /* 行高 */
+                box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* 轻微内阴影 */
+            }
+        </style>
+<body>
+    <h1>SSE 实时消息</h1>
+
+    <button id="connectButton">连接</button>
+    <pre id="messages">等待消息...</pre> <!-- 使用 pre 标签可以更好地显示原始格式 -->
+    <script src="index.js"></script>
+</body>
+</html>
