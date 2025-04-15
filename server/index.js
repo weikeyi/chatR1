@@ -6,7 +6,7 @@ const OpenAI = require('openai')
 
 const app = express()
 app.use(cors())
-
+app.use(express.json())
 let clients = []
 const filePath = './demo.txt'
 let lastSize = fs.statSync(filePath).size;
@@ -89,7 +89,14 @@ fs.watch(filePath, { persistent: true }, (eventType, filename) => {
   })
 
   async function* requestOpenAI(message) {
-    const completion = await OpenAI.chat.completions.create({
+    const openai = new OpenAI(
+      {
+          // 若没有配置环境变量，请用百炼API Key将下行替换为：apiKey: "sk-xxx",
+          apiKey: API,
+        baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+      }
+  );
+    const completion = await openai.chat.completions.create({
       model: "deepseek-r1",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
@@ -110,10 +117,14 @@ app.post('/chat',async (req,res)=>{
   res.setHeader('Cache-Control','no-cache')
   res.setHeader('Connection','keep-alive')
   
+  console.log(req.body);
+  
   const message = req.body.message
+  console.log(message)
+  
   try{
     const stream = requestOpenAI(message)
-    for(const chunk of stream){
+    for await(const chunk of stream){
       res.write(`data: ${JSON.stringify(chunk)}\n\n`)
     }
     res.end()
