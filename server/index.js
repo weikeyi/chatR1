@@ -88,40 +88,40 @@ fs.watch(filePath, { persistent: true }, (eventType, filename) => {
     }
   })
 
-async function requestOpenAI(message) {
-  let response
-  try{
+  async function* requestOpenAI(message) {
     const completion = await OpenAI.chat.completions.create({
-      model: "deepseek-r1",  //模型列表：https://help.aliyun.com/zh/model-studio/getting-started/models
+      model: "deepseek-r1",
       messages: [
-          { role: "system", content: "You are a helpful assistant." },
-          { role: "user", content: message }
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: message }
       ],
       stream: true
-  })
-    response = completion
+    })
+  
     for await (const chunk of completion) {
-      console.log(chunk);
-      
+      yield chunk // 直接把流返回
     }
-    
-  }catch(error){
-    console.error("处理 /chat 请求时出错:", error)
   }
-  return response
-}
 
-requestOpenAI('你好')
+
 
 app.post('/chat',async (req,res)=>{
   res.setHeader('Content-Type','text/event-stream')
   res.setHeader('Cache-Control','no-cache')
   res.setHeader('Connection','keep-alive')
-
   
-    const message = req.body.message
-    const response = await requestOpenAI(message)
-    res.json(response)
+  const message = req.body.message
+  try{
+    const stream = requestOpenAI(message)
+    for(const chunk of stream){
+      res.write(`data: ${JSON.stringify(chunk)}\n\n`)
+    }
+    res.end()
+  }catch(err){
+    console.error('Error:', err)
+    res.status(500).send('Error occurred')
+  }
+    
 })
 
 app.listen(port,()=>{
